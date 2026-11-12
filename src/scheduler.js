@@ -1,7 +1,7 @@
 import { config } from './config.js';
 import { buildBrief, collectNews } from './news.js';
 import { hasApiKey } from './config.js';
-import { readNewsCache, writeNewsCache, todayKey } from './store.js';
+import { readNewsCache, writeNewsCache, todayKey, readHistory, appendHistory, normKey } from './store.js';
 
 let pending = null;
 
@@ -23,7 +23,15 @@ export function refreshBrief({ force = false } = {}) {
     let payload;
     if (hasApiKey()) {
       try {
-        const brief = await buildBrief(items, config.briefCount);
+        // 优先挑没展示过的，这样点「刷新」能看到新内容
+        const history = new Set(readHistory());
+        const unseen = items.filter((it) => !history.has(normKey(it.title)));
+        // 新条目太少时不硬撑，退回完整池子，避免内容质量崩掉
+        const pool = unseen.length >= 24 ? unseen : items;
+
+        const brief = await buildBrief(pool, config.briefCount);
+        appendHistory(brief.items.map((b) => b.title));
+
         payload = {
           date: todayKey(),
           generatedAt: new Date().toISOString(),
@@ -31,6 +39,8 @@ export function refreshBrief({ force = false } = {}) {
           items: brief.items,
           sourceStatus,
           rawCount: items.length,
+          unseenCount: unseen.length,
+          usedUnseen: pool === unseen,
           degraded: false,
         };
       } catch (err) {

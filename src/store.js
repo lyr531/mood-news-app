@@ -42,3 +42,42 @@ export function humanTime(d = new Date()) {
     hour12: false,
   });
 }
+
+/* ---------------- 已展示历史 ----------------
+   用来避免每次刷新都给同样那几条。
+   只存标题，最多 300 条，够轮换一两天。 */
+
+const HISTORY_MAX = 300;
+const historyFile = () => path.join(config.dataDir, 'shown-history.json');
+
+const normKey = (s) =>
+  String(s || '')
+    .replace(/[\s\u3000\u3001-\u303f，。！？；：""''（）()《》]/g, '')
+    .slice(0, 40);
+
+export function readHistory() {
+  try {
+    const arr = JSON.parse(fs.readFileSync(historyFile(), 'utf8'));
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+export function appendHistory(titles) {
+  try {
+    ensureDir(config.dataDir);
+    const seen = new Set(readHistory());
+    for (const t of titles) {
+      const k = normKey(t);
+      if (k) seen.add(k);
+    }
+    // 保留最近 300 条
+    const list = [...seen].slice(-HISTORY_MAX);
+    fs.writeFileSync(historyFile(), JSON.stringify(list), 'utf8');
+  } catch {
+    /* 历史写不进去不影响主流程 */
+  }
+}
+
+export { normKey };
