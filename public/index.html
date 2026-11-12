@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>情绪新闻台 · 今日快报</title>
+<link rel="stylesheet" href="/style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <h1>情绪新闻台</h1>
+    </div>
+    <div class="top-right">
+      <span id="todayLabel" class="today"></span>
+      <span id="statusPill" class="pill pill-muted">连接中</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左：新闻快报 -->
+    <section class="card news-card">
+      <div class="card-head">
+        <h2>今日事实快报</h2>
+        <span id="newsCount" class="badge">—</span>
+      </div>
+      <p id="newsHeadline" class="headline"></p>
+      <ol id="newsList" class="news-list">
+        <li class="skeleton-row"></li>
+        <li class="skeleton-row"></li>
+        <li class="skeleton-row"></li>
+        <li class="skeleton-row"></li>
+      </ol>
+      <div class="card-foot">
+        <span id="newsUpdated" class="muted">正在抓取今日新闻…</span>
+        <button id="refreshBtn" class="link-btn" type="button">刷新</button>
+      </div>
+    </section>
+
+    <!-- 右：心情 -->
+    <section class="card mood-card">
+      <div class="card-head">
+        <h2>今天感觉怎么样</h2>
+      </div>
+      <p class="hint">说出来就好，不用组织语言。</p>
+
+      <div id="chips" class="chips">
+        <button class="chip" data-text="今天有点焦虑，事情堆在一起，有点喘不过气">有点焦虑</button>
+        <button class="chip" data-text="最近很低落，做什么都提不起劲">提不起劲</button>
+        <button class="chip" data-text="今天挺开心的，有件事顺利完成了">挺开心</button>
+        <button class="chip" data-text="很累，身体和脑子都很疲惫">很累</button>
+        <button class="chip" data-text="有点孤独，晚上一个人的时候特别明显">有点孤独</button>
+        <button class="chip" data-text="有点生气，被人误会了，很憋屈">有点生气</button>
+      </div>
+
+      <textarea id="moodInput" rows="4" maxlength="800"
+        placeholder="比如：这几天总失眠，一想到下周的汇报就心慌……"></textarea>
+
+      <div class="mood-actions">
+        <button id="moodBtn" class="primary-btn" type="button">听听我的心情</button>
+        <span id="moodHint" class="muted small"></span>
+      </div>
+
+      <div id="moodResult" class="result hidden"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>新闻来自公开热搜与 RSS，经模型整理；音乐来自网易云音乐外链。</span>
+    <span>内容仅供参考，不构成医疗建议。</span>
+  </footer>
+
+  <!-- 访问口令遮罩 -->
+  <div id="lockScreen" class="lock-screen hidden">
+    <form id="lockForm" class="lock-card" autocomplete="off">
+      <div class="lock-icon">🔒</div>
+      <h2>需要访问口令</h2>
+      <p class="lock-tip">这是私有站点，请输入口令后使用。</p>
+      <input id="lockInput" type="password" placeholder="访问口令" autocomplete="current-password" />
+      <button id="lockBtn" class="primary-btn" type="submit">进入</button>
+      <p id="lockError" class="lock-error"></p>
+    </form>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
