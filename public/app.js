@@ -62,9 +62,16 @@ async function loadNews(force = false) {
     setPill(data.degraded ? '降级模式' : '已就绪', data.degraded ? 'warn' : 'ok');
   } catch (err) {
     setPill('离线', 'warn');
-    $('#newsUpdated').textContent = '新闻加载失败：' + err.message;
-    $('#newsList').innerHTML =
-      '<li class="muted" style="padding:16px 0">抓取失败，可能是网络问题或新闻源暂时不可用。稍后点右上角「刷新」再试。</li>';
+    const hasData = Boolean(state.news?.items?.length);
+    if (hasData && force) {
+      // 已有内容时刷新失败，保留旧列表，只做轻提示
+      toast('刷新失败：' + err.message);
+      $('#newsUpdated').textContent = '刷新失败，仍显示上次结果';
+    } else {
+      $('#newsUpdated').textContent = '新闻加载失败：' + err.message;
+      $('#newsList').innerHTML =
+        '<li class="muted" style="padding:16px 0">抓取失败，可能是网络问题或新闻源暂时不可用。稍后点右上角「刷新」再试。</li>';
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = '刷新';

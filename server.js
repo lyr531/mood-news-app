@@ -128,10 +128,7 @@ const server = http.createServer(async (req, res) => {
     /* 新闻快报 */
     if (pathname === '/api/news' && req.method === 'GET') {
       const force = url.searchParams.get('refresh') === '1';
-      const isLocal = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip);
-      if (force && !isLocal) {
-        return sendJson(res, 403, { error: '只有本机可以强制刷新' });
-      }
+      // 强制刷新已由访问口令保护，不再限制来源 IP（云端 IP 不是 127.0.0.1）
       const data = await refreshBrief({ force });
       return sendJson(res, 200, data);
     }
